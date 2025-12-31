@@ -1,6 +1,6 @@
 #### **RVM Deposit \& Rewards API**
 
-This project provides a backend solution for a Reverse Vending Machine (RVM) system. It allows users to register, log their recyclable deposits (Plastic, Metal, Glass), and automatically earn reward points based on the material type and weight.
+This project provides a backend solution for a Recycling Vending Machine (RVM) system. It allows users to register, log their recyclable deposits (Plastic, Metal, Glass), and automatically earn reward points based on the material type and weight.
 
 \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 ##### **\*\*🛠 Setup \& Installation\*\***
