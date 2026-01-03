@@ -95,7 +95,8 @@ JSON
 }
 
 
-**Tech Stack***
+
+**Tech Stack**
 
 -Python and Django & Django REST Framework (DRF): 
 Core backend and API logic.
