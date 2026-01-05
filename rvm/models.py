@@ -10,18 +10,16 @@ class RVM(models.Model):
         return f"The Machine's Location:{self.location}"
 
 class Wallet(models.Model):
-    #one user can have one wallet
+    #one user can have one wallet One to one relationship 1 - 1
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='wallet')
-    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default='0.00')
     def __str__(self):
         return f"{self.user.username}'s Wallet"
 
-class Deposit(models.Model):
-    #every entry in this class will be a column, column name will be for ex: user, MATERIAL_CHOICES, material_type, weight, etc.
-    #class is the table itself.
 
-    #many to one; A user can make several deposits
+class Deposit(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='deposits')
+    #it means many deposits can occur in one RVM - One to many relation.
     machine = models.ForeignKey(RVM, on_delete=models.SET_NULL, null=True, related_name='activities')
 
     MATERIAL_CHOICES = [
@@ -29,27 +27,24 @@ class Deposit(models.Model):
         ('METAL', 'Metal'),
         ('GLASS', 'Glass'),
     ]
-    material_type = models.CharField(max_length=10, choices=MATERIAL_CHOICES) #max_length:how many chars in the cell, restricted to: MATERIAL_CHOICES
-
-    weight = models.FloatField()  # stores weight in float(type) that's coming from the RVM,machine( 2.5 (kg))
-    # machine_id = models.CharField(max_length=50)
-
+    material_type = models.CharField(max_length=10, choices=MATERIAL_CHOICES)
+    weight = models.FloatField()
     points_earned = models.FloatField(default=0.0)
-
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
-
         rates = {
-            'PLASTIC': 1,  # 1 point/kg
-            'METAL': 3,  # 3 points/kg
-            'GLASS': 2  # 2 points/kg
+            'PLASTIC': Decimal('1.0'),
+            'METAL': Decimal('3.0'),
+            'GLASS': Decimal('2.0')
         }
 
-        self.points_earned = self.weight * rates.get(self.material_type.upper(), 0)
+        calc_points = Decimal(str(self.weight)) * rates.get(self.material_type.upper(), Decimal('0.0'))
+        self.points_earned = float(calc_points)
+
 
         super().save(*args, **kwargs)
-        #wallet balance update
+
         wallet, created = Wallet.objects.get_or_create(user=self.user)
-        wallet.balance += Decimal(str(self.points_earned))
+        wallet.balance = Decimal(str(wallet.balance)) + calc_points
         wallet.save()
