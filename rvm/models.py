@@ -22,6 +22,14 @@ class Deposit(models.Model):
     #it means many deposits can occur in one RVM - One to many relation.
     machine = models.ForeignKey(RVM, on_delete=models.SET_NULL, null=True, related_name='activities')
 
+    # automatically sets the timestamp when deposit is made
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    # IdemPotent Logic(class Meta): Reps does not change the value; Preventing our server from adding the same request twice in case the machine retries
+    # sending the same request twice due to a glitch or sth.
+    class Meta:
+        unique_together = ('user', 'machine', 'created_at')
+
     MATERIAL_CHOICES = [
         ('PLASTIC', 'Plastic'),
         ('METAL', 'Metal'),
@@ -30,8 +38,6 @@ class Deposit(models.Model):
     material_type = models.CharField(max_length=10, choices=MATERIAL_CHOICES)
     weight = models.FloatField()
     points_earned = models.FloatField(default=0.0)
-    created_at = models.DateTimeField(auto_now_add=True)
-
     def save(self, *args, **kwargs):
         rates = {
             'PLASTIC': Decimal('1.0'),
